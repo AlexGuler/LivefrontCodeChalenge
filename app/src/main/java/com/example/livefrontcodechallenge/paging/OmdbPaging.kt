@@ -51,9 +51,9 @@ class OmdbPaging<K, T>(
             _state.update {
                 it.copy(
                     pagingStatus = if (isRefresh) {
-                        PagingStatus.LOADING_REFRESH
+                        PagingStatus.RefreshLoading
                     } else {
-                        PagingStatus.LOADING
+                        PagingStatus.Loading
                     }
                 )
             }
@@ -64,7 +64,7 @@ class OmdbPaging<K, T>(
                         Timber.d("alex: loadData got back OmdbPagingResult.Error exception: ${result.exception}")
 
                         state.value.copy(
-                            pagingStatus = PagingStatus.ERROR,
+                            pagingStatus = PagingStatus.Error(result.exception),
                             items = if (isRefresh) {
                                 persistentListOf()
                             } else {
@@ -78,7 +78,7 @@ class OmdbPaging<K, T>(
 
                         nextKey = result.nextKey
                         state.value.copy(
-                            pagingStatus = PagingStatus.IDLE,
+                            pagingStatus = PagingStatus.Idle,
                             items = if (isRefresh) {
                                 result.items.toImmutableList()
                             } else {
@@ -92,7 +92,7 @@ class OmdbPaging<K, T>(
                         Timber.d("alex: loadData got back done")
 
                         state.value.copy(
-                            pagingStatus = PagingStatus.DONE
+                            pagingStatus = PagingStatus.Done
                         )
                     }
                 }
@@ -121,7 +121,7 @@ class OmdbPaging<K, T>(
                 Timber.e(e, "alex: Error occurred trying to paginate data")
                 _state.update {
                     it.copy(
-                        pagingStatus = PagingStatus.ERROR,
+                        pagingStatus = PagingStatus.Error(e),
                     )
                 }
             }
@@ -179,19 +179,26 @@ sealed interface OmdbPagingResult<out K, out T> {
 // maybe omdb paging result should have an error to it too
 
 data class OmdbPagingState<T>(
-    val pagingStatus: PagingStatus = PagingStatus.IDLE,
+    val pagingStatus: PagingStatus = PagingStatus.Idle,
     val items: ImmutableList<T> = persistentListOf(),
-    // TODO: have an omdb error state here?
 ) {
-    val isInitialLoading: Boolean get() = pagingStatus == PagingStatus.LOADING_REFRESH && items.isEmpty()
-    val isInitialError: Boolean get() = pagingStatus == PagingStatus.ERROR && items.isEmpty()
+    val isInitialLoading: Boolean get() = pagingStatus is PagingStatus.RefreshLoading && items.isEmpty()
 }
 
 // should be a sealed interface / class where the error's should hold their own exceptions
-enum class PagingStatus {
-    IDLE,
-    LOADING,
-    LOADING_REFRESH,
-    ERROR,
-    DONE
+
+
+sealed interface PagingStatus {
+    data object Idle : PagingStatus
+
+    // loading more might be a better name
+    data object Loading : PagingStatus
+
+    data object RefreshLoading : PagingStatus
+
+    data class Error(
+        val exception: Exception
+    ) : PagingStatus
+
+    data object Done : PagingStatus
 }

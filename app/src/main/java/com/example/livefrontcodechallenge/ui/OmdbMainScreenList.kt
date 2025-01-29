@@ -87,7 +87,7 @@ fun OmdbMainScreenList(
          * Scroll to top if we are at the top of the list when [PagingStatus.LOADING_REFRESH] state
          * comes in, otherwise user will not see the loading spinner.
          */
-        if (lazyListState.firstVisibleItemIndex in 0..1 && pagingState.pagingStatus == PagingStatus.LOADING_REFRESH) {
+        if (lazyListState.firstVisibleItemIndex in 0..1 && pagingState.pagingStatus == PagingStatus.RefreshLoading) {
             lazyListState.animateScrollToItem(0)
         }
     }
@@ -96,7 +96,7 @@ fun OmdbMainScreenList(
         modifier = modifier,
         state = lazyListState
     ) {
-        if (pagingState.pagingStatus == PagingStatus.LOADING_REFRESH) {
+        if (pagingState.pagingStatus == PagingStatus.RefreshLoading) {
             item {
                 OmdbLoadingListItem(Modifier.animateContentSize())
             }
@@ -121,12 +121,12 @@ fun OmdbMainScreenList(
         }
 
         when (pagingState.pagingStatus) {
-            PagingStatus.LOADING -> {
+            PagingStatus.Loading -> {
                 item {
                     OmdbLoadingListItem()
                 }
             }
-            PagingStatus.ERROR -> {
+            is PagingStatus.Error -> {
                 item {
                     OmdbErrorListItem(
                         onRetry = onRetry
@@ -253,7 +253,7 @@ private fun PreviewOmdbMainScreenList() {
         OmdbMainScreenList(
             modifier = Modifier.fillMaxSize(),
             pagingState = OmdbPagingState(
-                pagingStatus = PagingStatus.IDLE,
+                pagingStatus = PagingStatus.Idle,
                 items = persistentListOf(
                     OmdbEntry(
                         imdbID = "tt10872600",

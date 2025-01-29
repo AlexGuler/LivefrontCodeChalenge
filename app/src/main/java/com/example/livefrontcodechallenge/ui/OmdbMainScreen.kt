@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.livefrontcodechallenge.OmdbMainScreenState
+import com.example.livefrontcodechallenge.models.OmdbError
+import com.example.livefrontcodechallenge.paging.PagingStatus
 
 @Composable
 fun OmdbMainScreen(
@@ -72,24 +74,45 @@ fun OmdbMainScreen(
                         }
                     }
 
-                    pagingState.isInitialError -> {
+                    pagingState.pagingStatus is PagingStatus.Error && pagingState.items.isEmpty() -> {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Column(
                                 modifier = Modifier.align(Alignment.Center),
-                                verticalArrangement = Arrangement.Center
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(
-                                    text = "Error Occurred",
-                                    fontSize = 16.sp
-                                )
-                                Button(
-                                    onClick = onErrorRetry
-                                ) {
-                                    Text(
-                                        text = "Retry",
-                                        fontSize = 16.sp
-                                    )
+                                when (pagingState.pagingStatus.exception) {
+                                    is OmdbError.NoResultsError -> {
+                                        // TODO: update UI
+                                        Text(
+                                            text = "No Results Found!",
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                    is OmdbError.TooManyResultsError -> {
+                                        // TODO: update UI
+                                        Text(
+                                            text = "Too Many Results try specifying more",
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                    else -> {
+                                        // TODO: update UI
+                                        Text(
+                                            text = "Error Occurred",
+                                            fontSize = 16.sp
+                                        )
+                                        Button(
+                                            onClick = onErrorRetry
+                                        ) {
+                                            Text(
+                                                text = "Retry",
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
                                 }
+
                             }
                         }
                     }
@@ -108,6 +131,13 @@ fun OmdbMainScreen(
                              * TODO: show empty UI
                              *  show something like nothing here try searching or whatever
                              */
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = "Tap on the search bar to search for something!",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
                         }
                     }
                 }

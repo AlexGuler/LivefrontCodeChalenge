@@ -139,9 +139,9 @@ class MainViewModel @Inject constructor(
                         it.copy(
                             omdbPagingState = it.omdbPagingState.copy(
                                 pagingStatus = if (query.isNotBlank()) {
-                                    PagingStatus.LOADING_REFRESH
+                                    PagingStatus.RefreshLoading
                                 } else {
-                                    PagingStatus.IDLE
+                                    PagingStatus.Idle
                                 }
                             )
                         )
@@ -174,7 +174,7 @@ class MainViewModel @Inject constructor(
 
         Timber.d("alex: onBottomOfListReached: currentPagingState: $currentPagingState")
 
-        if (currentPagingState == PagingStatus.IDLE) {
+        if (currentPagingState == PagingStatus.Idle) {
             omdbPaging.loadMore()
         }
     }
