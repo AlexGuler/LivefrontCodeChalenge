@@ -134,12 +134,6 @@ class OmdbPaging<K, T>(
     }
 }
 
-// TODO: probably move all of this into its own file?
-//data class OmdbPagingResult<K, T>(
-//    val items: List<T>,
-//    val nextKey: K
-//)
-
 sealed interface OmdbPagingResult<out K, out T> {
 
     data class Success<K, T>(
@@ -154,30 +148,6 @@ sealed interface OmdbPagingResult<out K, out T> {
     ) : OmdbPagingResult<Nothing, Nothing>
 }
 
-//sealed interface OmdbPagingResult<K, T> {
-//
-//   data class Success<K, T>(
-//       val items: List<T>,
-//       val nextKey: K
-//   ) : OmdbPagingResult<K, T>
-//
-//    data object Done : OmdbPagingResult<Nothing, Nothing>
-//
-//    data class Error(
-//        val exception: Exception
-//    ) : OmdbPagingResult<Nothing, Nothing>
-//}
-
-/**
- * Success,
- *
- * Done
- *
- * Error
- */
-
-// maybe omdb paging result should have an error to it too
-
 data class OmdbPagingState<T>(
     val pagingStatus: PagingStatus = PagingStatus.Idle,
     val items: ImmutableList<T> = persistentListOf(),
@@ -185,19 +155,16 @@ data class OmdbPagingState<T>(
     val isInitialLoading: Boolean get() = pagingStatus is PagingStatus.RefreshLoading && items.isEmpty()
 }
 
-// should be a sealed interface / class where the error's should hold their own exceptions
-
-
 sealed interface PagingStatus {
     data object Idle : PagingStatus
 
-    // loading more might be a better name
+    // LoadMore / MoreLoading might be a better name
     data object Loading : PagingStatus
 
     data object RefreshLoading : PagingStatus
 
     data class Error(
-        val exception: Exception
+        val exception: Exception // maybe this can just be an OmdbError instead of exception?
     ) : PagingStatus
 
     data object Done : PagingStatus
