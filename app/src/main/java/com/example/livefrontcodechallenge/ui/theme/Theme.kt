@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color.White,
+    onPrimary = Color.White.copy(alpha = 0.5f),
     secondary = PurpleGrey80,
     tertiary = Pink80,
     inversePrimary = Color.Black,
@@ -18,6 +19,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.Black,
+    onPrimary = Color.Black.copy(alpha = 0.5f),
     secondary = PurpleGrey40,
     tertiary = Pink40,
     inversePrimary = Color.White,

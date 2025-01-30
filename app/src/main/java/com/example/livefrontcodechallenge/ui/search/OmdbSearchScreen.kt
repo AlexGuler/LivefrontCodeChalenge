@@ -42,7 +42,7 @@ fun OmdbSearchScreen(
             Box(
                 modifier = Modifier
                     .statusBarsPadding()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth()
             ) {
                 Text(

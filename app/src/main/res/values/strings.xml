@@ -36,5 +36,6 @@
     <string name="released">Released:</string>
     <string name="metascore">Metascore:</string>
     <string name="imdb_rating">IMDb Rating:</string>
+    <string name="search">Search</string>
 
 </resources>
