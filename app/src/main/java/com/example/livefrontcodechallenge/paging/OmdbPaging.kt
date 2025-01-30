@@ -137,7 +137,7 @@ sealed interface PagingStatus {
     data object RefreshLoading : PagingStatus
 
     data class Error(
-        val exception: Exception // maybe this can just be an OmdbError instead of exception?
+        val exception: Exception
     ) : PagingStatus
 
     data object Done : PagingStatus
