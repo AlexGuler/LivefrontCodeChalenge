@@ -33,7 +33,7 @@ fun OmdbSearchEmptyUi(modifier: Modifier = Modifier) {
             }
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
