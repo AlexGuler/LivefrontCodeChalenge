@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.livefrontcodechallenge.R
 import com.example.livefrontcodechallenge.models.OmdbEntry
 import com.example.livefrontcodechallenge.models.OmdbType
@@ -52,19 +51,8 @@ fun OmdbSearchScreenList(
     onBottomOfListReached: () -> Unit,
     onRetry: () -> Unit
 ) {
-    // TODO: need to figure out when we're at the bottom of the list
     val lazyListState = rememberLazyListState()
     LaunchedEffect(lazyListState) {
-        /*
-
-        val shouldStartPaginate = remember {
-    derivedStateOf {
-        viewModel.canPaginate && (lazyColumnListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -9) >= (lazyColumnListState.layoutInfo.totalItemsCount - 6)
-    }
-}
-
-         */
-        // TODO: use derivedStateOf here
         snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .filter { it != null }
             .distinctUntilChanged()
@@ -77,10 +65,9 @@ fun OmdbSearchScreenList(
             }
     }
 
-//    LaunchedEffect(pagingStatus, lazyListState) {
     LaunchedEffect(pagingState.pagingStatus) {
         /**
-         * Scroll to top if we are at the top of the list when [PagingStatus.LOADING_REFRESH] state
+         * Scroll to top if we are at the top of the list when [PagingStatus.RefreshLoading] state
          * comes in, otherwise user will not see the loading spinner.
          */
         if (lazyListState.firstVisibleItemIndex in 0..1 && pagingState.pagingStatus == PagingStatus.RefreshLoading) {
@@ -146,11 +133,12 @@ private fun OmdbErrorListItem(
     ) {
         Button(
             modifier = Modifier.align(Alignment.Center),
-            onClick = onRetry,
+            onClick = onRetry
         ) {
             Text(
                 text = stringResource(R.string.retry),
-                fontSize = 17.sp
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.inversePrimary
             )
         }
     }
@@ -208,22 +196,26 @@ private fun OmdbEntry(
                     ) {
                         append(omdbEntry.title)
                     }
-                    append(", ${omdbEntry.year}")
+                    append(stringResource(R.string.comma))
+                    append(" ")
+                    append(omdbEntry.year)
                 },
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
             )
+
             Text(
                 text = when (omdbEntry.type) {
-                    OmdbType.MOVIE -> "Movie"
-                    OmdbType.SERIES -> "TV Series"
-                    OmdbType.EPISODE -> "Episode"
-                    OmdbType.GAME -> "Game"
+                    OmdbType.MOVIE -> stringResource(R.string.movie)
+                    OmdbType.SERIES -> stringResource(R.string.series)
+                    OmdbType.EPISODE -> stringResource(R.string.episode)
+                    OmdbType.GAME -> stringResource(R.string.game)
                     null -> ""
                 },
                 style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

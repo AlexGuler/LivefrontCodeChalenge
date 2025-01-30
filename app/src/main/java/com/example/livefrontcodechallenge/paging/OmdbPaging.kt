@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+/**
+ * TODO: document this
+ */
 class OmdbPaging<K, T>(
     dispatcher: CoroutineDispatcher,
     private val loadMore: suspend (key: K?) -> OmdbPagingResult<K, T>

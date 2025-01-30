@@ -48,8 +48,16 @@ class OmdbRepositoryImpl @Inject constructor(
         }
     }
 
+    var count = 1
+
     override fun getOmdbEntryDetails(imdbId: String): Flow<LoadableData<OmdbEntryDetail>> {
         return flow<LoadableData<OmdbEntryDetail>> {
+
+            count++
+            if (count % 2 == 0) {
+                throw Exception("test")
+            }
+
             emit(LoadableData.Data(omdbNetworkService.getOmdbEntryDetail(imdbId)))
         }.onStart {
             emit(LoadableData.Loading)

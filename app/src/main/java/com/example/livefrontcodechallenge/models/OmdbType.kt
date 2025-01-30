@@ -8,5 +8,5 @@ enum class OmdbType {
     @SerialName("movie") MOVIE,
     @SerialName("series") SERIES,
     @SerialName("episode") EPISODE,
-    @SerialName("game") GAME,
+    @SerialName("game") GAME;
 }

@@ -29,5 +29,4 @@ object NetworkModule {
             .build()
             .create(OmdbNetworkService::class.java)
     }
-
 }

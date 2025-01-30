@@ -12,7 +12,6 @@ class LivefrontChallengeApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
-            // TODO: add firebase crash reporting tree
             // Timber.plant(CrashReportingTree())
         }
     }
