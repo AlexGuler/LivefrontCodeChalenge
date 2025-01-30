@@ -14,8 +14,7 @@ interface OmdbNetworkService {
     @GET("?apikey=${BuildConfig.OMDB_API_KEY}")
     suspend fun search(
         @Query("s") query: String,
-        // TODO: require 1-100
-        @Query("page") page: Int, // 1-100
+        @Query("page") page: Int,
         @Query("type") type: String? = null
     ): OmdbSearchNetworkResponse
 

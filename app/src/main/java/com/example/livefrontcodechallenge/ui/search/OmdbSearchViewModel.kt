@@ -1,11 +1,10 @@
-package com.example.livefrontcodechallenge
+package com.example.livefrontcodechallenge.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.livefrontcodechallenge.models.OmdbEntry
 import com.example.livefrontcodechallenge.models.OmdbError
 import com.example.livefrontcodechallenge.models.OmdbSearchResult
-import com.example.livefrontcodechallenge.models.OmdbType
 import com.example.livefrontcodechallenge.paging.OmdbPaging
 import com.example.livefrontcodechallenge.paging.OmdbPagingResult
 import com.example.livefrontcodechallenge.paging.OmdbPagingState
@@ -26,14 +25,21 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class OmdbSearchViewModel @Inject constructor(
     private val omdbRepository: OmdbRepository
 ) : ViewModel() {
+
+    init {
+        Timber.d("alex: omdbsearch viewmodel INIT")
+    }
 
     private val omdbPaging = OmdbPaging(
         dispatcher = Dispatchers.IO, // inject dispatcher for unit tests
         loadMore = ::loadMore // TODO make loadMore a usecase and then just do useCase::invoke here
     )
+
+    // TODO: if we had our own query state flow we can maybe "combine" with the omdb paging state
+    //  and transform it into our own ui state
 
     private val _state: MutableStateFlow<OmdbMainScreenState> = MutableStateFlow(
         OmdbMainScreenState(
@@ -56,7 +62,7 @@ class MainViewModel @Inject constructor(
         listenForQueryChanges()
     }
 
-    // TODO: put this in a use case?
+    // TODO: put this in a use case
     private suspend fun loadMore(key: Int?): OmdbPagingResult<Int, OmdbEntry> {
         val page = key ?: 1
 
@@ -74,7 +80,7 @@ class MainViewModel @Inject constructor(
                     /**
                      * If no results are found and we have items then we're at the end of pagination.
                      */
-                    // use page here?
+                    // use page here? as in if page > 1
                     val itemsIsNotEmpty = state.value.omdbPagingState.items.isNotEmpty()
                     if (omdbError is OmdbError.NoResultsError && itemsIsNotEmpty) {
                         OmdbPagingResult.Done
@@ -91,34 +97,9 @@ class MainViewModel @Inject constructor(
                 )
             }
         }
-
-//        when (response) {
-//            is OmdbSearchResult.Error -> {
-//                when (response.omdbError) {
-//                    is OmdbError.NoResultsError -> TODO()
-//                    is OmdbError.TooManyResultsError -> TODO()
-//                    is OmdbError.RetryableError -> throw response.omdbError.exception
-//                }
-//            }
-//            is OmdbSearchResult.Success -> {
-//                OmdbPagingResult(
-//                    items = response.search,
-//                    nextKey = page + 1
-//                )
-//            }
-//        }
-//
-//
-//        return OmdbPagingResult(
-//            items = response.search,
-//            nextKey = page + 1
-////            nextKey = response.search.lastOrNull()?.imdbID?.toInt() ?: page
-//        )
-
     }
 
     fun onQueryChanged(query: String) {
-//        Timber.d("alex: onQueryChanged: $query")
         _state.update {
             it.copy(
                 query = query
@@ -132,7 +113,6 @@ class MainViewModel @Inject constructor(
             state
                 .map { it.query }
                 .distinctUntilChanged()
-                // TODO: remove this onEach, should have a "searching" boolean
                 .onEach { query ->
                     Timber.d("alex: query: |$query|")
                     _state.update {
@@ -146,9 +126,6 @@ class MainViewModel @Inject constructor(
                             )
                         )
                     }
-                    /**
-                     * TODO: there is a bug here where if i reset the search bar the list will reappear
-                     */
                 }
                 .debounce { if (it.isEmpty() || it.isBlank()) 0L else 1000L }
                 .collect { text ->
@@ -182,6 +159,5 @@ class MainViewModel @Inject constructor(
 
 data class OmdbMainScreenState(
     val query: String = "",
-    val omdbTypeSelected: OmdbType? = null,
     val omdbPagingState: OmdbPagingState<OmdbEntry>
 )

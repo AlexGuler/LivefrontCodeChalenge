@@ -1,4 +1,4 @@
-package com.example.livefrontcodechallenge.ui
+package com.example.livefrontcodechallenge.ui.search
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
@@ -14,18 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -35,21 +32,20 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.example.livefrontcodechallenge.R
 import com.example.livefrontcodechallenge.models.OmdbEntry
 import com.example.livefrontcodechallenge.models.OmdbType
 import com.example.livefrontcodechallenge.paging.OmdbPagingState
 import com.example.livefrontcodechallenge.paging.PagingStatus
+import com.example.livefrontcodechallenge.ui.shared.OmdbAsyncImage
+import com.example.livefrontcodechallenge.ui.shared.OmdbAsyncImageError
 import com.example.livefrontcodechallenge.ui.theme.LivefrontCodeChallengeTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun OmdbMainScreenList(
+fun OmdbSearchScreenList(
     modifier: Modifier = Modifier,
     pagingState: OmdbPagingState<OmdbEntry>,
     onEntryClicked: (String) -> Unit,
@@ -185,30 +181,19 @@ private fun OmdbEntry(
     Row(
         modifier = modifier
     ) {
-        // TODO: install proxy man and see if images are being cached properly
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(omdbEntry.poster)
-                .crossfade(true)
-                .build(),
-            onLoading = {
-//                Timber.d("alex: onLoading for ${omdbEntry.title}")
-            },
-            onSuccess = {
-//                Timber.d("alex: on success for ${omdbEntry.title}")
-            },
-            onError = {
-//                Timber.e("alex: on error for ${omdbEntry.title}", it.result.throwable)
-            },
-            error = null,
-            contentDescription = "Description",
-            contentScale = ContentScale.Crop,
+        OmdbAsyncImage(
             modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
                 .size(
-                    width = 60.dp,
-                    height = 100.dp
+                    width = 80.dp,
+                    height = 120.dp
+                ),
+            image = omdbEntry.poster,
+            errorComposable = {
+                OmdbAsyncImageError(
+                    errorIconSize = 30.dp,
+                    showErrorMessage = false
                 )
+            }
         )
 
         Column(
@@ -225,7 +210,7 @@ private fun OmdbEntry(
                     }
                     append(", ${omdbEntry.year}")
                 },
-                fontSize = 19.sp,
+                style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -238,7 +223,7 @@ private fun OmdbEntry(
                     OmdbType.GAME -> "Game"
                     null -> ""
                 },
-                fontSize = 17.sp
+                style = MaterialTheme.typography.titleMedium,
             )
         }
     }
@@ -250,7 +235,7 @@ private fun OmdbEntry(
 @Composable
 private fun PreviewOmdbMainScreenList() {
     LivefrontCodeChallengeTheme {
-        OmdbMainScreenList(
+        OmdbSearchScreenList(
             modifier = Modifier.fillMaxSize(),
             pagingState = OmdbPagingState(
                 pagingStatus = PagingStatus.Idle,

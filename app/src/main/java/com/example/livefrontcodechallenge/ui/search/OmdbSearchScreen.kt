@@ -1,4 +1,4 @@
-package com.example.livefrontcodechallenge.ui
+package com.example.livefrontcodechallenge.ui.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,36 +9,52 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.livefrontcodechallenge.OmdbMainScreenState
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.livefrontcodechallenge.R
 import com.example.livefrontcodechallenge.models.OmdbError
 import com.example.livefrontcodechallenge.paging.PagingStatus
 
 @Composable
-fun OmdbMainScreen(
-    state: OmdbMainScreenState,
-    onQueryChanged: (String) -> Unit,
-    onErrorRetry: () -> Unit,
-    onEntryClicked: (String) -> Unit,
-    onBottomOfListReached: () -> Unit
+fun OmdbSearchScreen(
+    viewModel: OmdbSearchViewModel = hiltViewModel(),
+    onEntryClicked: (String) -> Unit
 ) {
+    val state by viewModel.state.collectAsState()
+
     Scaffold(
         modifier = Modifier
             .imePadding()
-            .fillMaxSize()
+            .fillMaxSize(),
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.omdb_search_title),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -48,18 +64,12 @@ fun OmdbMainScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = "Omdb Movie Search",
-                    fontSize = 26.sp,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-
                 OmdbSearchBar(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
                         .fillMaxWidth(),
                     text = state.query,
-                    onValueChanged = onQueryChanged,
+                    onValueChanged = viewModel::onQueryChanged,
                 )
 
                 Spacer(Modifier.size(8.dp))
@@ -103,7 +113,7 @@ fun OmdbMainScreen(
                                             fontSize = 16.sp
                                         )
                                         Button(
-                                            onClick = onErrorRetry
+                                            onClick = viewModel::onErrorRetry
                                         ) {
                                             Text(
                                                 text = "Retry",
@@ -119,12 +129,12 @@ fun OmdbMainScreen(
 
                     else -> {
                         if (pagingState.items.isNotEmpty()) {
-                            OmdbMainScreenList(
+                            OmdbSearchScreenList(
                                 modifier = Modifier.fillMaxSize(),
                                 pagingState = pagingState,
                                 onEntryClicked = onEntryClicked,
-                                onBottomOfListReached = onBottomOfListReached,
-                                onRetry = onErrorRetry
+                                onBottomOfListReached = viewModel::onBottomOfListReached,
+                                onRetry = viewModel::onErrorRetry
                             )
                         } else {
                             /**
@@ -144,23 +154,4 @@ fun OmdbMainScreen(
             }
         }
     }
-}
-
-@Composable
-fun OmdbSearchBar(
-    modifier: Modifier = Modifier,
-    text: String,
-    onValueChanged: (String) -> Unit
-) {
-    var value by remember { mutableStateOf(text) }
-    TextField(
-        value = value,
-        onValueChange = {
-            value = it
-            onValueChanged.invoke(it)
-        },
-        label = { Text("Search") },
-        maxLines = 1,
-        modifier = modifier
-    )
 }

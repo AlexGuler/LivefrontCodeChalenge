@@ -1,5 +1,29 @@
 <resources>
     <string name="app_name">LivefrontCodeChallenge</string>
 
+    <string name="omdb_search_title">Omdb Search</string>
+
     <string name="retry">Retry</string>
+    <string name="back">Back</string>
+
+    <string name="image_loading_error_content_desc">Error Loading Image</string>
+    <string name="image_loading_error">Error loading Image</string>
+
+<!--    <string name="image_loading_error"> %1$s • %1$s • %1$s </string>-->
+
+
+    <!-- Omdb Type Strings -->
+    <string name="movie">Movie</string>
+    <string name="series">Series</string>
+    <string name="episode">Episode</string>
+    <string name="game">Game</string>
+
+    <string name="bullet_point">•</string>
+    <string name="comma">,</string>
+    <string name="colon">:</string>
+    <string name="genre">Genre:</string>
+    <string name="released">Released:</string>
+    <string name="metascore">Metascore:</string>
+    <string name="imdb_rating">IMDb Rating:</string>
+
 </resources>

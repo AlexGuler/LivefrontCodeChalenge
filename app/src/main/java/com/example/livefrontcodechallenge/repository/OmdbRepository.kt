@@ -1,5 +1,7 @@
 package com.example.livefrontcodechallenge.repository
 
+import com.example.livefrontcodechallenge.models.LoadableData
+import com.example.livefrontcodechallenge.models.OmdbEntryDetail
 import com.example.livefrontcodechallenge.models.OmdbError
 import com.example.livefrontcodechallenge.models.OmdbSearchNetworkResponse
 import com.example.livefrontcodechallenge.models.OmdbSearchResult
@@ -7,6 +9,10 @@ import com.example.livefrontcodechallenge.models.OmdbType
 import com.example.livefrontcodechallenge.network.OmdbApiConstants
 import com.example.livefrontcodechallenge.network.OmdbNetworkService
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
 
 interface OmdbRepository {
@@ -16,6 +22,8 @@ interface OmdbRepository {
         page: Int = 1,
         type: OmdbType? = null
     ): OmdbSearchResult
+
+    fun getOmdbEntryDetails(imdbId: String): Flow<LoadableData<OmdbEntryDetail>>
 }
 
 class OmdbRepositoryImpl @Inject constructor(
@@ -27,19 +35,7 @@ class OmdbRepositoryImpl @Inject constructor(
         page: Int,
         type: OmdbType?
     ): OmdbSearchResult {
-//        val entries = OmdbTestEntriesGenerator.generateEntries(query, page, 10)
-//        delay(2000L)
-//        return OmdbSearchResponse(
-//            search = entries,
-//            totalResults = entries.size.toString(),
-//            response = true.toString(),
-//        )
-
         Timber.d("alex: search query: $query , page: $page , type: $type")
-
-
-        // TODO: this should all be wrapped in its own mapper or something
-
         return try {
             val searchResponse = omdbNetworkService.search(
                 query = query,
@@ -49,6 +45,17 @@ class OmdbRepositoryImpl @Inject constructor(
             searchResponse.toOmdbSearchResult()
         } catch (e: Exception) {
             OmdbSearchResult.Error(OmdbError.RetryableError(e.message))
+        }
+    }
+
+    override fun getOmdbEntryDetails(imdbId: String): Flow<LoadableData<OmdbEntryDetail>> {
+        return flow<LoadableData<OmdbEntryDetail>> {
+            emit(LoadableData.Data(omdbNetworkService.getOmdbEntryDetail(imdbId)))
+        }.onStart {
+            emit(LoadableData.Loading)
+        }.catch { throwable ->
+            Timber.e(throwable, "alex: error occurred trying to get omdb entry details")
+            emit(LoadableData.Error(throwable))
         }
     }
 }

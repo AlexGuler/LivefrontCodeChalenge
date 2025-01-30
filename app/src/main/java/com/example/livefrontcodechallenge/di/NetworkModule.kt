@@ -20,9 +20,12 @@ object NetworkModule {
     @Singleton
     fun provideOmdbNetworkService(): OmdbNetworkService {
         val contentType = "application/json".toMediaType()
+        val json = Json {
+            ignoreUnknownKeys = true
+        }
         return Retrofit.Builder()
             .baseUrl(OmdbApiConstants.BASE_URL)
-            .addConverterFactory(Json.asConverterFactory(contentType))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(OmdbNetworkService::class.java)
     }

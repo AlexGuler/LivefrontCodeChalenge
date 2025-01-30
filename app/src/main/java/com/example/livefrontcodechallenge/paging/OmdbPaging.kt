@@ -1,6 +1,5 @@
 package com.example.livefrontcodechallenge.paging
 
-import com.example.livefrontcodechallenge.models.OmdbEntry
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -58,6 +57,7 @@ class OmdbPaging<K, T>(
                 )
             }
             try {
+                // this needs a timeout
                 val pagingState = when (val result = loadMore.invoke(nextKey)) {
                     is OmdbPagingResult.Error -> {
 
