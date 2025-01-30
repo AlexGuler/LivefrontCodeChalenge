@@ -12,7 +12,8 @@ private val DarkColorScheme = darkColorScheme(
     secondary = PurpleGrey80,
     tertiary = Pink80,
     inversePrimary = Color.Black,
-    surfaceDim = Grey2
+    surfaceDim = Grey2,
+    error = Color.Red
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -21,6 +22,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40,
     inversePrimary = Color.White,
     surfaceDim = Grey1,
+    error = Error40
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

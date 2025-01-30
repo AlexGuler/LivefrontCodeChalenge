@@ -12,6 +12,17 @@
 <!--    <string name="image_loading_error"> %1$s • %1$s • %1$s </string>-->
 
 
+    <!-- Search Screen -->
+    <string name="omdb_search_empty_title">Search for Movies, Series, Episodes, &amp; Games</string>
+    <string name="omdb_search_no_results_title">No Results</string>
+    <string name="omdb_search_no_results_body">No results for this search. Please try again.</string>
+    <string name="omdb_search_too_many_results_title">Too Many Results!</string>
+    <string name="omdb_search_too_many_results_body">Try to specify your search.</string>
+
+    <string name="omdb_search_error_title">Unexpected Error Occurred</string>
+    <string name="omdb_search_error_body">Please try again.</string>
+
+
     <!-- Omdb Type Strings -->
     <string name="movie">Movie</string>
     <string name="series">Series</string>

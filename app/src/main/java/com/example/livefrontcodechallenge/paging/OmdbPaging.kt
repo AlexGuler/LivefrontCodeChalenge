@@ -152,7 +152,10 @@ data class OmdbPagingState<T>(
     val pagingStatus: PagingStatus = PagingStatus.Idle,
     val items: ImmutableList<T> = persistentListOf(),
 ) {
-    val isInitialLoading: Boolean get() = pagingStatus is PagingStatus.RefreshLoading && items.isEmpty()
+    val isInitialLoading: Boolean
+        get() =
+            (pagingStatus is PagingStatus.RefreshLoading || pagingStatus is PagingStatus.Loading) &&
+                items.isEmpty()
 }
 
 sealed interface PagingStatus {
