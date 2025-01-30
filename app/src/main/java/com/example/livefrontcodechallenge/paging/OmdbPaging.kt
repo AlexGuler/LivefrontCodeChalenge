@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
- * TODO: document this
+ * Paging Helper
  */
 class OmdbPaging<K, T>(
     dispatcher: CoroutineDispatcher,
@@ -28,28 +28,32 @@ class OmdbPaging<K, T>(
     private val _state = MutableStateFlow(OmdbPagingState<T>())
     val state: StateFlow<OmdbPagingState<T>> = _state
 
+    /**
+     * Used to reset items of the state.
+     */
     fun reset() {
-        Timber.d("alex: reset!")
-        // cancel all coroutine jobs
         _state.update {
             it.copy(
                 items = persistentListOf()
             )
         }
         nextKey = null
-        Timber.d("alex: coroutineScope cancel!")
         job?.cancel(CancellationException("Resetting state"))
     }
 
+    /**
+     * This will completely reload the data and refresh the state.
+     */
     fun refresh() {
-        Timber.d("alex: refresh!")
         nextKey = null
         job = loadData(true)
     }
 
+    /**
+     * Loading of the data as well as concatenation of the list.
+     */
     private fun loadData(isRefresh: Boolean = false): Job {
         return coroutineScope.launch {
-            Timber.d("alex: paging load more")
             _state.update {
                 it.copy(
                     pagingStatus = if (isRefresh) {
@@ -60,12 +64,8 @@ class OmdbPaging<K, T>(
                 )
             }
             try {
-                // this needs a timeout
                 val pagingState = when (val result = loadMore.invoke(nextKey)) {
                     is OmdbPagingResult.Error -> {
-
-                        Timber.d("alex: loadData got back OmdbPagingResult.Error exception: ${result.exception}")
-
                         state.value.copy(
                             pagingStatus = PagingStatus.Error(result.exception),
                             items = if (isRefresh) {
@@ -75,10 +75,8 @@ class OmdbPaging<K, T>(
                             }
                         )
                     }
+
                     is OmdbPagingResult.Success -> {
-
-                        Timber.d("alex: loadData got back success")
-
                         nextKey = result.nextKey
                         state.value.copy(
                             pagingStatus = PagingStatus.Idle,
@@ -91,64 +89,34 @@ class OmdbPaging<K, T>(
                     }
 
                     OmdbPagingResult.Done -> {
-
-                        Timber.d("alex: loadData got back done")
-
                         state.value.copy(
                             pagingStatus = PagingStatus.Done
                         )
                     }
                 }
                 _state.update { pagingState }
-
-//                val result = loadMore.invoke(nextKey)
-//                nextKey = result.nextKey
-//
-//                // TODO: check if done
-//                _state.update {
-//                    it.copy(
-//                        pagingStatus = PagingStatus.IDLE,
-//                        items = if (isRefresh) {
-//                            result.items.toImmutableList()
-//                        } else {
-//                            (it.items + result.items).toImmutableList()
-//                        }
-//                    )
-//                }
             } catch (e: CancellationException) {
-                // when loading job is cancelled reset everything
+                Timber.e(e, "Error occurred CancellationException")
                 _state.update {
                     OmdbPagingState()
                 }
             } catch (e: Exception) {
-                Timber.e(e, "alex: Error occurred trying to paginate data")
+                Timber.e(e, "Error occurred Exception")
                 _state.update {
                     it.copy(
-                        pagingStatus = PagingStatus.Error(e),
+                        pagingStatus = PagingStatus.Error(e)
                     )
                 }
             }
         }
     }
 
+    /**
+     * Loading more data (not refresh).
+     */
     fun loadMore() {
-        Timber.d("alex: load more!")
         job = loadData(false)
     }
-}
-
-sealed interface OmdbPagingResult<out K, out T> {
-
-    data class Success<K, T>(
-        val items: List<T>,
-        val nextKey: K
-    ) : OmdbPagingResult<K, T>
-
-    data object Done : OmdbPagingResult<Nothing, Nothing>
-
-    data class Error(
-        val exception: Exception
-    ) : OmdbPagingResult<Nothing, Nothing>
 }
 
 data class OmdbPagingState<T>(
@@ -164,7 +132,6 @@ data class OmdbPagingState<T>(
 sealed interface PagingStatus {
     data object Idle : PagingStatus
 
-    // LoadMore / MoreLoading might be a better name
     data object Loading : PagingStatus
 
     data object RefreshLoading : PagingStatus

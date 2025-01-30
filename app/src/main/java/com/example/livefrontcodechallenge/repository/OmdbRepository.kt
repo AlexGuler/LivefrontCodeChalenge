@@ -13,8 +13,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
-import timber.log.Timber
 
+/**
+ * Omdb repository.
+ *
+ * @see [search] - Provides some sanitization for search.
+ * @see [getOmdbEntryDetails] - Wraps API call in [Flow] for easier consumption.
+ */
 interface OmdbRepository {
 
     suspend fun search(
@@ -35,7 +40,6 @@ class OmdbRepositoryImpl @Inject constructor(
         page: Int,
         type: OmdbType?
     ): OmdbSearchResult {
-        Timber.d("alex: search query: $query , page: $page , type: $type")
         return try {
             val searchResponse = omdbNetworkService.search(
                 query = query,
@@ -48,21 +52,12 @@ class OmdbRepositoryImpl @Inject constructor(
         }
     }
 
-    var count = 1
-
     override fun getOmdbEntryDetails(imdbId: String): Flow<LoadableData<OmdbEntryDetail>> {
         return flow<LoadableData<OmdbEntryDetail>> {
-
-            count++
-            if (count % 2 == 0) {
-                throw Exception("test")
-            }
-
             emit(LoadableData.Data(omdbNetworkService.getOmdbEntryDetail(imdbId)))
         }.onStart {
             emit(LoadableData.Loading)
         }.catch { throwable ->
-            Timber.e(throwable, "alex: error occurred trying to get omdb entry details")
             emit(LoadableData.Error(throwable))
         }
     }
@@ -75,9 +70,6 @@ private fun OmdbSearchNetworkResponse.toOmdbSearchResult(): OmdbSearchResult {
             search = search
         )
     } else {
-
-        Timber.d("alex: error: $error")
-
         val omdbError = when {
             error?.lowercase()?.contains(OmdbError.NO_RESULTS_ERROR_MESSAGE) == true -> OmdbError.NoResultsError()
             error?.lowercase()?.contains(OmdbError.TOO_MANY_RESULTS_ERROR_MESSAGE) == true -> OmdbError.TooManyResultsError()

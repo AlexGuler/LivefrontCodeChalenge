@@ -1,4 +1,5 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,6 +10,13 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
 }
+
+val secretsPropertiesFile = rootProject.file("secrets.properties")
+if (!secretsPropertiesFile.exists()) {
+    throw Exception("Need the secrets.properties file to build the project")
+}
+val secretsProperties = Properties()
+secretsProperties.load(FileInputStream(secretsPropertiesFile))
 
 android {
     namespace = "com.example.livefrontcodechallenge"
@@ -26,7 +34,7 @@ android {
         buildConfigField(
             type = "String",
             name = "OMDB_API_KEY",
-            value = gradleLocalProperties(rootDir, providers).getProperty("OMDB_API_KEY")
+            value = secretsProperties.getProperty("OMDB_API_KEY")
         )
     }
 
@@ -64,6 +72,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

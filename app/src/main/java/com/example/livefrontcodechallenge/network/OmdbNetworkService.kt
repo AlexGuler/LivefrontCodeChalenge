@@ -11,6 +11,9 @@ import retrofit2.http.Query
  */
 interface OmdbNetworkService {
 
+    /**
+     * Endpoint for searching for omdb entries.
+     */
     @GET("?apikey=${BuildConfig.OMDB_API_KEY}")
     suspend fun search(
         @Query("s") query: String,
@@ -18,6 +21,9 @@ interface OmdbNetworkService {
         @Query("type") type: String? = null
     ): OmdbSearchNetworkResponse
 
+    /**
+     * Endpoint for getting the full details of a specific omdbEntry.
+     */
     @GET("?apikey=${BuildConfig.OMDB_API_KEY}&plot=full")
     suspend fun getOmdbEntryDetail(
         @Query("i") imdbID: String

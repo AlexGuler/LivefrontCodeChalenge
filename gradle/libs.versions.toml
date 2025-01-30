@@ -6,10 +6,8 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
-#activityCompose = "1.10.0"
-#composeBom = "2025.01.00"
 activityCompose = "1.9.3"
-composeBom = "2024.12.01" # TODO making this 2025.01.00 makes it so we can't see the loading spinner at the bottom of the list read the release notes
+composeBom = "2024.12.01"
 hilt = "2.51.1"
 ksp = "2.0.21-1.0.27"
 retrofit = "2.11.0"
@@ -49,6 +47,7 @@ timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "tim
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

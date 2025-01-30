@@ -22,4 +22,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+secrets.properties
 TODO_README.md

@@ -1,5 +1,8 @@
 package com.example.livefrontcodechallenge.models
 
+/**
+ * Omdb Search Result model
+ */
 sealed class OmdbSearchResult {
 
     data class Success(
